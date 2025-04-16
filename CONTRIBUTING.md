@@ -29,7 +29,7 @@ Please be kind, respectful and helpful to all community members. Harrassment and
 
 ## Repository Structure
 
-Nebular is organized into several modular libraries, each with its own purpose.
+Nebula is organized into several modular libraries, each with its own purpose.
 Below is a summary of each library found within Nebular:
 
 | Project | Description |
