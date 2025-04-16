@@ -23,7 +23,7 @@ Nebula contain multiple libraries that are independently versioned and can be us
 ## Getting Started
 1. Clone the repository. 
    ``` 
-	git clone https://github.com/yourusername/nebula.git
+	git clone https://github.com/ajecooper/nebula.git
 	cd nebula 
    ```
 2. Restore dependencies
