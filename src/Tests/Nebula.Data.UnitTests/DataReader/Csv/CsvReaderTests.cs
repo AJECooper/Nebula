@@ -6,7 +6,7 @@ namespace Nebula.Data.UnitTests.DataReader.Csv
 {
     public class CsvReaderTests : IDisposable
     {
-        private readonly string _testFilePath = Path.GetTempFileName();
+        private readonly string _testFilePath = "TestFilePath.csv";
 
         public CsvReaderTests()
         {
@@ -30,7 +30,7 @@ namespace Nebula.Data.UnitTests.DataReader.Csv
 
             var df = CsvReader.FromCsv(_testFilePath);
 
-            var columns = df.GetColumns();
+            var columns = df.Columns;
             columns.Should().BeEquivalentTo(new List<string> { "Column1", "Column2" });
         }
 
@@ -42,7 +42,7 @@ namespace Nebula.Data.UnitTests.DataReader.Csv
 
             var df = CsvReader.FromCsv(_testFilePath);
 
-            var columns = df.GetColumns();
+            var columns = df.Columns;
             var data = df.GetRows();
 
             columns.Should().BeEquivalentTo(new List<string> { "Column1", "Column2" });

@@ -1,2 +1,9 @@
-﻿// See https://aka.ms/new-console-template for more information
-Console.WriteLine("Hello, World!");
+﻿using Nebula.Sandbox.Experimentation.DataFrames;
+
+class Program
+{
+    static void Main(string[] args)
+    {
+        DataFramesExperiment.Run();
+    }
+}

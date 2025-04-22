@@ -1,32 +1,61 @@
-﻿namespace Nebula.Data.Frame
+﻿using System;
+
+namespace Nebula.Data.Frame
 {
     public class DataFrame
     {
         private IList<DataRow> _rows;
-        private IEnumerable<string> _columns;
+        private IList<string> _columns;
 
+        /// <summary>
+        /// Gets a list of column names from the DataFrame.
+        /// </summary>
+        public IEnumerable<string> Columns => _columns;
+
+        /// <summary>
+        /// Gets a list of rows from the DataFrame.
+        /// </summary>
+        public IEnumerable<DataRow> Rows => _rows;
+
+        /// <summary>
+        /// Creates an empty DataFrame.
+        /// </summary>
         public DataFrame()
         {
-            _rows = new List<DataRow>();
             _columns = new List<string>();
+            _rows = new List<DataRow>();
         }
 
         /// <summary>
-        /// Get a list of columns in the DataFrame.
+        /// Creates a DataFrame with the specified column headers.
         /// </summary>
-        /// <returns>A list of columns.</returns>
-        public IEnumerable<string> GetColumns()
+        /// <param name="columnHeaders">Column headers.</param>
+        public DataFrame(IList<string> columnHeaders)
         {
-            return _columns;
+            _columns = columnHeaders;
+            _rows = new List<DataRow>();
         }
 
         /// <summary>
-        /// Adds new columns to the DataFrame.
+        /// Creates a fully populated DataFrame.
         /// </summary>
-        /// <param name="columns">A list of columns to add to the DataFrame.</param>
-        public void SetColumns(IEnumerable<string> columns)
+        /// <param name="data">Column headers and rows.</param>
+        public DataFrame(IEnumerable<Dictionary<string, object>> data)
         {
-            _columns = columns;
+            _columns = data.FirstOrDefault()?.Keys.ToList();
+            _rows = data.Select(x => new DataRow(x)).ToList();
+        }
+
+        /// <summary>
+        /// Adds a new column to the DataFrame.
+        /// </summary>
+        /// <param name="columnTitle">The column header title.</param>
+        public void AddColumn(string columnTitle)
+        {
+            if (!_columns.Contains(columnTitle))
+            {
+                _columns.Add(columnTitle);
+            }
         }
 
         /// <summary>
@@ -54,6 +83,62 @@
         /// <returns>A list of rows within a specified column.</returns>
         public IEnumerable<object> this[string columnName] =>
             _rows.Select(row => row[columnName]);
+
+        /// <summary>
+        /// Extracts required columns by name from the DataFrame and returns a new DataFrame.
+        /// </summary>
+        /// <param name="columns">Column to extract by title.</param>
+        /// <returns>A fully populated dataframe with only the required columns.</returns>
+        /// <exception cref="ArgumentException"></exception>
+        public DataFrame Extract(params string[] columns)
+        {
+            foreach (var column in columns)
+            {
+                if (!_columns.Contains(column))
+                {
+                    throw new ArgumentException($"Column '{column}' does not exist in the DataFrame.");
+                }
+            }
+
+            var newRows = _rows.Select(row =>
+                new DataRow(row._record.Where(kv => columns.Contains(kv.Key))
+                                       .ToDictionary(kv => kv.Key, kv => kv.Value))
+            ).ToList();
+
+            return new DataFrame(columns.ToList()) { _rows = newRows };
+        }
+
+        /// <summary>
+        /// Extracts required columns by index from the DataFrame and returns a new DataFrame.
+        /// </summary>
+        /// <param name="columns">Column to extract by index.</param>
+        /// <returns>A fully populated dataframe with only the required columns.</returns>
+        /// <exception cref="ArgumentException"></exception>
+        public DataFrame Extract(params int[] columnIndexes)
+        {
+            // Validate indices
+            foreach (var columnIndex in columnIndexes)
+            {
+                if (columnIndex < 0 || columnIndex >= _columns.Count)
+                {
+                    throw new ArgumentException($"Column index '{columnIndex}' is out of range.");
+                }
+            }
+
+            // Get the column names from the indices
+            var selectedColumnNames = columnIndexes.Select(i => _columns[i]).ToList();
+
+            // Create new rows with only selected columns
+            var newRows = _rows.Select(row =>
+                new DataRow(
+                    row._record
+                        .Where(kv => selectedColumnNames.Contains(kv.Key))
+                        .ToDictionary(kv => kv.Key, kv => kv.Value))
+            ).ToList();
+
+            // Return new DataFrame
+            return new DataFrame(selectedColumnNames) { _rows = newRows };
+        }
 
         /// <summary>
         /// A string representation of the DataFrame.
@@ -93,6 +178,11 @@
                 stringOutput.Add($"... {_rows.Count() - maxOutput} more row(s)");
 
             return string.Join("\n", stringOutput);
+        }
+
+        private bool Contains(string columnName)
+        {
+            return _columns.Contains(columnName);
         }
     }
 }

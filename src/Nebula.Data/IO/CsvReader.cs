@@ -11,41 +11,40 @@ namespace Nebula.Data.IO
         /// <returns>A DataFrame.</returns>
         public static DataFrame FromCsv(string filePath)
         {
-            var df = new DataFrame();
+            if (!filePath.EndsWith(".csv", StringComparison.OrdinalIgnoreCase))
+            {
+                throw new Exception("The provided file is not a CSV file.");
+            }
 
-            var lines = File.ReadAllLines(filePath);
+            var fileContent = File.ReadAllLines(filePath);
 
-            if (lines.Length == 0)
+            if (fileContent.Length == 0)
             {
                 throw new Exception("The provided file is empty.");
             }
 
-            // Read in the headers and remove any whitespace
-            var headers = lines[0].Split(',')
+            var columnHeaders = fileContent[0].Split(',')
                 .Select(x => x.Trim())
                 .ToArray();
 
-            df.SetColumns(headers);
-
-            // Read in the data
-            for (var i = 1; i < lines.Length; i++)
-            {
-                var record = lines[i].Split(",")
-                    .Select(i => i.Trim())
-                    .ToArray();
-
-                var row = new Dictionary<string, object>();
-
-                // Map value to header
-                for (var j = 0; j < headers.Length; j++)
+            var data = fileContent.Skip(1)
+                .Select(row =>
                 {
-                    row[headers[j]] = record[j];
-                }
+                    var columnValues = row.Split(',')
+                        .Select(val => val.Trim())
+                        .ToList();
 
-                df.AddRow(row);
-            }
+                    var rowData = new Dictionary<string, object>();
 
-            return df;
+                    for(var i = 0; i < columnHeaders.Length; i++)
+                    {
+                        rowData[columnHeaders[i]] = columnValues[i];
+                    }
+
+                    return rowData;
+                });
+
+            return new DataFrame(data);
         }
     }
 }
