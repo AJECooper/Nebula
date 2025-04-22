@@ -6,7 +6,7 @@ namespace Nebula.Data.UnitTests.DataReader.Csv
 {
     public class CsvReaderTests : IDisposable
     {
-        private readonly string _testFilePath = Path.GetTempFileName();
+        private readonly string _testFilePath = "TestFilePath.csv";
 
         public CsvReaderTests()
         {
