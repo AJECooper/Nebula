@@ -1,2 +1,10 @@
-﻿// See https://aka.ms/new-console-template for more information
-Console.WriteLine("Hello, World!");
+﻿using BenchmarkDotNet.Running;
+using Nebula.Data.Benchmarks.DataReaders;
+
+class Program
+{
+    static void Main(string[] args)
+    {
+        BenchmarkRunner.Run<CsvReaderBenchmarks>();
+    }
+}
