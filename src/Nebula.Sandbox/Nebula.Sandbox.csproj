@@ -8,17 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Experimentation\DataFrames\Data\sample_data.csv" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\Nebula.Data\Nebula.Data.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Include="Experimentation\DataFrames\Data\sample_data.csv">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
   </ItemGroup>
 
 </Project>

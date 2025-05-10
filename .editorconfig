@@ -1,0 +1,38 @@
+# Top-most EditorConfig file
+root = true
+
+# Apply to all C# source files
+[*.cs]
+
+# Use UTF-8 encoding
+charset = utf-8
+
+#########################
+# StyleCop Rule Settings
+#########################
+
+# Do not enforce 'this.' prefix on member access
+dotnet_diagnostic.SA1101.severity = none
+
+# Optional: disable required XML docs for private members
+dotnet_diagnostic.SA1600.severity = none
+
+# Optional: disable spacing rules (e.g. around brackets, commas)
+dotnet_diagnostic.SA1001.severity = suggestion
+dotnet_diagnostic.SA1028.severity = suggestion
+
+# Optional: disable file header requirement
+# dotnet_diagnostic.SA1633.severity = none
+
+#########################
+# Code Style Preferences
+#########################
+
+# Prefer explicit types
+dotnet_style_qualification_for_field = false:suggestion
+dotnet_style_qualification_for_property = false:suggestion
+dotnet_style_qualification_for_method = false:suggestion
+
+# Prefer expression-bodied members
+csharp_style_expression_bodied_methods = true:suggestion
+csharp_style_expression_bodied_properties = true:suggestion

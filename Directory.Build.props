@@ -1,0 +1,11 @@
+<Project>
+  <!-- Customize build properties for all projects in the solution -->
+  <PropertyGroup>
+	  <RootNamespace>$(MSBuildProjectName)</RootNamespace>
+	  <AssemblyName>$(MSBuildProjectName)</AssemblyName>
+  </PropertyGroup>
+	
+  <ItemGroup Condition="'$(MSBuildProjectName)' != 'Nebula.Sandbox'">
+	  <AdditionalFiles Include="$(SolutionDir)stylecop.json" />
+  </ItemGroup>
+</Project>
