@@ -1,4 +1,4 @@
-// <copyright file="DataTableTests.cs" company="Nebula">
+// <copyright file="DatatableDataTests.cs" company="Nebula">
 // Copyright © Nebula 2025
 // </copyright>
 
@@ -16,55 +16,119 @@ namespace Nebula.Data.UnitTests
         [Fact]
         public void Constructor_ShouldNotThrowException_GivenValidData()
         {
-            var table = new List<Dictionary<string, object>>
+            // Arrange
+            var tableData = new List<Dictionary<string, object>>
             {
                 new() { { "Name", "Alice" }, { "Age", 30 } },
                 new() { { "Name", "Bob" }, { "Age", 25 } },
             };
 
-            Action act = () => new DataTable(table);
+            // Act
+            Action act = () => new DataTable(tableData);
 
+            // Assert
             act.Should().NotThrow();
         }
 
         [Fact]
         public void Constructor_ShouldThrowException_GivenNullData()
         {
-            var table = new List<Dictionary<string, object>>
+            // Arrange
+            var tableData = new List<Dictionary<string, object>>
             {
             };
 
-            Action act = () => new DataTable(table);
+            // Act
+            Action act = () => new DataTable(tableData);
 
+            // Assert
             act.Should().Throw<ArgumentException>();
         }
 
         [Fact]
         public void Constructor_ShouldThrowException_GivenInconsistentKeys()
         {
-            var table = new List<Dictionary<string, object>>
+            // Arrange
+            var tableData = new List<Dictionary<string, object>>
             {
                 new() { { "Name", "Alice" }, { "Age", 30 } },
                 new() { { "Name", "Bob" }, { "Location", "London" } },
             };
 
-            Action act = () => new DataTable(table);
+            // Act
+            Action act = () => new DataTable(tableData);
 
+            // Assert
             act.Should().Throw<ArgumentException>();
         }
 
         [Fact]
         public void Constructor_ShouldNotThrowException_GivenNullValues()
         {
-            var table = new List<Dictionary<string, object>>
+            // Arrange
+            var tableData = new List<Dictionary<string, object>>
             {
                 new() { { "Name", "Alice" }, { "Age", 30 } },
                 new() { { "Name", "Bob" }, { "Age", null } },
             };
 
-            Action act = () => new DataTable(table);
+            // Act
+            Action act = () => new DataTable(tableData);
 
+            // Assert
             act.Should().NotThrow();
+        }
+
+        [Fact]
+        public void ColumnCount_ShouldReturnNumberOfColumns_GivenValidDataTable()
+        {
+            // Arrange
+            var tableData = new List<Dictionary<string, object>>
+            {
+                new() { { "Name", "Alice" }, { "Age", 30 } },
+                new() { { "Name", "Bob" }, { "Age", 25 } },
+            };
+
+            // Act
+            var dataTable = new DataTable(tableData);
+
+            // Assert
+            dataTable.ColumnCount.Should().Be(2);
+        }
+
+        [Fact]
+        public void RowCount_ShouldReturnNumberOfColumns_GivenValidDataTable()
+        {
+            // Arrange
+            var tableData = new List<Dictionary<string, object>>
+            {
+                new() { { "Name", "Alice" }, { "Age", 30 } },
+                new() { { "Name", "Bob" }, { "Age", 25 } },
+                new() { { "Name", "Tim" }, { "Age", 40 } },
+            };
+
+            // Act
+            var dataTable = new DataTable(tableData);
+
+            // Assert
+            dataTable.RowCount.Should().Be(3);
+        }
+
+        [Fact]
+        public void Columns_ShouldReturnColumnNames_GivenValidDataTable()
+        {
+            // Arrange
+            var tableData = new List<Dictionary<string, object>>
+            {
+                new() { { "Name", "Alice" }, { "Age", 30 } },
+                new() { { "Name", "Bob" }, { "Age", 25 } },
+            };
+
+            // Act
+            var dataTable = new DataTable(tableData);
+
+            // Assert
+            dataTable.Columns.Should().BeEquivalentTo(new List<string> { "Name", "Age" });
         }
     }
 }

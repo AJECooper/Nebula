@@ -9,7 +9,7 @@ namespace Nebula.Data.Structures
     /// </summary>
     public class DataTable
     {
-        private readonly IList<string> _columns;
+        private readonly IReadOnlyList<string> _columns;
         private readonly IList<DataRow> _rows;
 
         /// <summary>
@@ -23,6 +23,21 @@ namespace Nebula.Data.Structures
             _columns = table.First().Keys.ToList();
             _rows = table.Select(x => new DataRow(x)).ToList();
         }
+
+        /// <summary>
+        /// Gets the number of columns in the data table.
+        /// </summary>
+        public int ColumnCount => _columns.Count;
+
+        /// <summary>
+        /// Gets the number of rows in the data table.
+        /// </summary>
+        public int RowCount => _rows.Count;
+
+        /// <summary>
+        /// Gets the column names of the data table.
+        /// </summary>
+        public IReadOnlyList<string> Columns => _columns;
 
         /// <summary>
         /// Validates that the provided table is not null or empty and that all rows have the same keys.
