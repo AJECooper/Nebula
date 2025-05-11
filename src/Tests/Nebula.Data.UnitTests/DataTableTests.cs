@@ -1,4 +1,4 @@
-﻿// <copyright file="DataTableTests.cs" company="Nebula">
+// <copyright file="DataTableTests.cs" company="Nebula">
 // Copyright © Nebula 2025
 // </copyright>
 
@@ -51,6 +51,20 @@ namespace Nebula.Data.UnitTests
             Action act = () => new DataTable(table);
 
             act.Should().Throw<ArgumentException>();
+        }
+
+        [Fact]
+        public void Constructor_ShouldNotThrowException_GivenNullValues()
+        {
+            var table = new List<Dictionary<string, object>>
+            {
+                new() { { "Name", "Alice" }, { "Age", 30 } },
+                new() { { "Name", "Bob" }, { "Age", null } },
+            };
+
+            Action act = () => new DataTable(table);
+
+            act.Should().NotThrow();
         }
     }
 }
