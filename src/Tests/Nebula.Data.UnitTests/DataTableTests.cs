@@ -171,5 +171,43 @@ namespace Nebula.Data.UnitTests
             // Assert
             act.Should().Throw<IndexOutOfRangeException>();
         }
+
+        [Fact]
+        public void GetColumn_ShouldReturnColumnValues_GivenValidColumnName()
+        {
+            // Arrange
+            var tableData = new List<Dictionary<string, object>>
+            {
+                new() { { "Name", "Alice" }, { "Age", 30 } },
+                new() { { "Name", "Bob" }, { "Age", 25 } },
+            };
+
+            // Act
+            var dataTable = new DataTable(tableData);
+            var columnValues = dataTable.GetColumn("Name").ToList();
+
+            // Assert
+            columnValues.Should().NotBeNull();
+            columnValues.Should().HaveCount(2);
+            columnValues.Should().BeEquivalentTo(new List<object> { "Alice", "Bob" });
+        }
+
+        [Fact]
+        public void GetColumn_ShouldThrowException_GivenInvalidColumnName()
+        {
+            // Arrange
+            var tableData = new List<Dictionary<string, object>>
+            {
+                new() { { "Name", "Alice" }, { "Age", 30 } },
+                new() { { "Name", "Bob" }, { "Age", 25 } },
+            };
+
+            // Act
+            var dataTable = new DataTable(tableData);
+            Action act = () => dataTable.GetColumn("Location");
+
+            // Assert
+            act.Should().Throw<ArgumentException>();
+        }
     }
 }

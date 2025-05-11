@@ -49,10 +49,26 @@ namespace Nebula.Data.Structures
         {
             if (index < 0 || index >= _rows.Count)
             {
-                throw new IndexOutOfRangeException();
+                throw new IndexOutOfRangeException($"Row {index} is out of range for the data table. The range is 0 - {_rows.Count - 1}");
             }
 
             return _rows[index];
+        }
+
+        /// <summary>
+        /// Gets all values of a specified column by column name.
+        /// </summary>
+        /// <param name="columnName">The name of the column.</param>
+        /// <returns>A list of values paired to a column name.</returns>
+        /// <exception cref="ArgumentException">Thrown when entering a name that doesn't exist in the data table.</exception>
+        public IEnumerable<object> GetColumn(string columnName)
+        {
+            if (!_columns.Contains(columnName))
+            {
+                throw new ArgumentException($"Column '{columnName}' does not exist in the data table.", nameof(columnName));
+            }
+
+            return _rows.Select(x => x[columnName]).ToList();
         }
 
         /// <summary>
@@ -73,7 +89,7 @@ namespace Nebula.Data.Structures
             {
                 if (!keys.SequenceEqual(row.Keys))
                 {
-                    throw new ArgumentException("All rows must have the same keys.", nameof(table));
+                    throw new ArgumentException("All rows must have the same column structure.", nameof(table));
                 }
             }    
         }
