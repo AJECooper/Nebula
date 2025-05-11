@@ -130,5 +130,46 @@ namespace Nebula.Data.UnitTests
             // Assert
             dataTable.Columns.Should().BeEquivalentTo(new List<string> { "Name", "Age" });
         }
+
+        [Fact]
+        public void GetRowByIndex_ShouldReturnRow_GivenValidIndex()
+        {
+            // Arrange
+            var tableData = new List<Dictionary<string, object>>
+            {
+                new() { { "Name", "Alice" }, { "Age", 30 } },
+                new() { { "Name", "Bob" }, { "Age", 25 } },
+                new() { { "Name", "Steve" }, { "Age", 30 } },
+                new() { { "Name", "Matthew" }, { "Age", 42 } },
+                new() { { "Name", "John" }, { "Age", 17 } },
+            };
+
+            // Act
+            var dataTable = new DataTable(tableData);
+            var row = dataTable.GetRowByIndex(2);
+
+            // Assert
+            row.Should().NotBeNull();
+            row["Name"].Should().Be("Steve");
+            row["Age"].Should().Be(30);
+        }
+
+        [Fact]
+        public void GetRowByIndex_ShouldThrowException_GivenInvalidIndex()
+        {
+            // Arrange
+            var tableData = new List<Dictionary<string, object>>
+            {
+                new() { { "Name", "Alice" }, { "Age", 30 } },
+                new() { { "Name", "Bob" }, { "Age", 25 } },
+            };
+
+            // Act
+            var dataTable = new DataTable(tableData);
+            Action act = () => dataTable.GetRowByIndex(5);
+
+            // Assert
+            act.Should().Throw<IndexOutOfRangeException>();
+        }
     }
 }

@@ -22,5 +22,19 @@ namespace Nebula.Data.Structures
         {
             _record = record ?? throw new ArgumentNullException(nameof(record));
         }
+
+        /// <summary>
+        /// Gets the value for specified column name.
+        /// </summary>
+        /// <param name="columnName">The column title.</param>
+        /// <returns>The value for the specified column.</returns>
+        public object this[string columnName] => _record[columnName];
+
+        /// <summary>
+        /// Gets the value for specified column index.
+        /// </summary>
+        /// <param name="columnIndex">The column index.</param>
+        /// <returns>The value for the specified column.</returns>
+        public object this[int columnIndex] => _record[_record.Keys.ElementAt(columnIndex)];
     }
 }

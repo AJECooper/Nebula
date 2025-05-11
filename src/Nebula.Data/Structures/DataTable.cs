@@ -40,6 +40,22 @@ namespace Nebula.Data.Structures
         public IReadOnlyList<string> Columns => _columns;
 
         /// <summary>
+        /// Gets the row of the data table by index.
+        /// </summary>
+        /// <param name="index">The index of the desired row.</param>
+        /// <returns>A data row representing a single row of data within the data table.</returns>
+        /// <exception cref="IndexOutOfRangeException">User tried to access a row that is out of range.</exception>
+        public DataRow GetRowByIndex(int index)
+        {
+            if (index < 0 || index >= _rows.Count)
+            {
+                throw new IndexOutOfRangeException();
+            }
+
+            return _rows[index];
+        }
+
+        /// <summary>
         /// Validates that the provided table is not null or empty and that all rows have the same keys.
         /// </summary>
         /// <param name="table">The data table.</param>
