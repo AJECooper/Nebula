@@ -1,4 +1,4 @@
-// <copyright file="DatatableDataTests.cs" company="Nebula">
+// <copyright file="DataTableTests.cs" company="Nebula">
 // Copyright © Nebula 2025
 // </copyright>
 
@@ -208,6 +208,85 @@ namespace Nebula.Data.UnitTests
 
             // Assert
             act.Should().Throw<ArgumentException>();
+        }
+
+        [Fact]
+        public void Extract_ShouldReturnNewDataTable_GivenValidColumnNames()
+        {
+            // Arrange
+            var tableData = new List<Dictionary<string, object>>
+            {
+                new() { { "Name", "Alice" }, { "Age", 30 }, { "Location", "NY" } },
+                new() { { "Name", "Bob" }, { "Age", 25 }, { "Location", "LA" } },
+            };
+
+            // Act
+            var dataTable = new DataTable(tableData);
+            var extractedTable = dataTable.Extract("Name", "Location");
+
+            // Assert
+            extractedTable.Should().NotBeNull();
+            extractedTable.ColumnCount.Should().Be(2);
+            extractedTable.RowCount.Should().Be(2);
+            extractedTable.Columns.Should().BeEquivalentTo(new List<string> { "Name", "Location" });
+        }
+
+        [Fact]
+        public void Extract_ShouldThrowException_GivenInvalidColumnNames()
+        {
+            // Arrange
+            var tableData = new List<Dictionary<string, object>>
+            {
+                new() { { "Name", "Alice" }, { "Age", 30 }, { "Location", "NY" } },
+                new() { { "Name", "Bob" }, { "Age", 25 }, { "Location", "LA" } },
+            };
+
+            // Act
+            var dataTable = new DataTable(tableData);
+            Action act = () => dataTable.Extract("Name", "InvalidColumn");
+
+            // Assert
+            act.Should().Throw<ArgumentException>();
+        }
+
+        [Fact]
+        public void Extract_ShouldReturnNewDataTable_GivenValidColumnIndexes()
+        {
+            // Arrange
+            var tableData = new List<Dictionary<string, object>>
+            {
+                new() { { "Name", "Alice" }, { "Age", 30 }, { "Location", "NY" } },
+                new() { { "Name", "Bob" }, { "Age", 25 }, { "Location", "LA" } },
+            };
+
+            // Act
+            var dataTable = new DataTable(tableData);
+            var extractedTable = dataTable.Extract(0, 2);
+
+            // Assert
+            extractedTable.Should().NotBeNull();
+            extractedTable.ColumnCount.Should().Be(2);
+            extractedTable.RowCount.Should().Be(2);
+            extractedTable.Columns.Should().BeEquivalentTo(new List<string> { "Name", "Location" });
+        }
+
+        [Fact]
+        public void Extract_ShouldThrowIndexOutOfRangeException_GivenInvalidColumnIndexes()
+        {
+            // Arrange
+            var tableData = new List<Dictionary<string, object>>
+            {
+                new() { { "Name", "Alice" }, { "Age", 30 }, { "Location", "NY" } },
+                new() { { "Name", "Bob" }, { "Age", 25 }, { "Location", "LA" } },
+            };
+
+            // Act
+            var dataTable = new DataTable(tableData);
+            Action act = () => dataTable.Extract(0, 5);
+
+            // Assert
+            act.Should().Throw<IndexOutOfRangeException>();
+
         }
     }
 }

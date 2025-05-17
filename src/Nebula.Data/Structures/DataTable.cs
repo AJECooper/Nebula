@@ -72,6 +72,60 @@ namespace Nebula.Data.Structures
         }
 
         /// <summary>
+        /// Creates a new data table with only the specified columns.
+        /// </summary>
+        /// <param name="columnNames">The required columns for the new data table.</param>
+        /// <returns>A new data table with only the required data.</returns>
+        /// <exception cref="ArgumentException">Throws when column names are null, empty or don't exist in the existing data table.</exception>
+        public DataTable Extract(params string[] columnNames)
+        {
+            if (columnNames == null || columnNames.Length == 0)
+            {
+                throw new ArgumentException("Column names cannot be null or empty.", nameof(columnNames));
+            }
+
+            foreach (var columnName in columnNames)
+            {
+                if (!_columns.Contains(columnName))
+                {
+                    throw new ArgumentException($"Column '{columnName}' does not exist in the data table.", nameof(columnNames));
+                }
+            }
+
+            var newDataTable = _rows
+                .Select(row => columnNames.ToDictionary(columnName => columnName, columnName => row[columnName]))
+                .ToList();
+
+            return new DataTable(newDataTable);
+        }
+
+        /// <summary>
+        /// Creates a new data table with only the specified columns by their indexes.
+        /// </summary>
+        /// <param name="columnIndexes">The index of the columns to extract.</param>
+        /// <returns>A new data table with only the required data.</returns>
+        /// <exception cref="ArgumentException">Throws when column indexes are null or empty.</exception>
+        /// <exception cref="IndexOutOfRangeException">Throws when column indexes are out of range.</exception>
+        public DataTable Extract(params int[] columnIndexes)
+        {
+            if (columnIndexes == null || columnIndexes.Length == 0)
+            {
+                throw new ArgumentException("You must provide the column indexes to extract.", nameof(columnIndexes));
+            }
+
+            if (columnIndexes.Any(x => x < 0 || x >= _columns.Count))
+            {
+                throw new IndexOutOfRangeException("Column indexes are out of range.");
+            }
+
+            var columnNames = columnIndexes
+                .Select(x => _columns[x])
+                .ToArray();
+
+            return Extract(columnNames);
+        }
+
+        /// <summary>
         /// Validates that the provided table is not null or empty and that all rows have the same keys.
         /// </summary>
         /// <param name="table">The data table.</param>
