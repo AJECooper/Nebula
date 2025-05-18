@@ -286,7 +286,46 @@ namespace Nebula.Data.UnitTests
 
             // Assert
             act.Should().Throw<IndexOutOfRangeException>();
+        }
 
+        [Fact]
+        public void TryGetColumn_ShouldReturnTrueAndColumnValues_GivenValidColumnName()
+        {
+            // Arrange
+            var tableData = new List<Dictionary<string, object>>
+            {
+                new() { { "Name", "Alice" }, { "Age", 30 }, { "Location", "NY" } },
+                new() { { "Name", "Bob" }, { "Age", 25 }, { "Location", "LA" } },
+            };
+
+            // Act
+            var dataTable = new DataTable(tableData);
+            var result = dataTable.TryGetColumn("Name", out var columnValues);
+
+            // Assert
+            result.Should().BeTrue();
+            columnValues.Should().NotBeNull();
+            columnValues.Should().HaveCount(2);
+            columnValues.Should().BeEquivalentTo(new List<object> { "Alice", "Bob" });
+        }
+
+        [Fact]
+        public void TryGetColumn_ShouldReturnFalseAndNull_GivenInvalidColumnName()
+        {
+            // Arrange
+            var tableData = new List<Dictionary<string, object>>
+            {
+                new() { { "Name", "Alice" }, { "Age", 30 }, { "Location", "NY" } },
+                new() { { "Name", "Bob" }, { "Age", 25 }, { "Location", "LA" } },
+            };
+
+            // Act
+            var dataTable = new DataTable(tableData);
+            var result = dataTable.TryGetColumn("Profession", out var columnValues);
+
+            // Assert
+            result.Should().BeFalse();
+            columnValues.Should().BeNull();
         }
     }
 }

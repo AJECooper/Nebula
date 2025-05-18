@@ -72,6 +72,24 @@ namespace Nebula.Data.Structures
         }
 
         /// <summary>
+        /// Tries to get the values of a specified column by column name.
+        /// </summary>
+        /// <param name="columnName">The name of the column.</param>
+        /// <param name="data">All the rows of data for the specified column.</param>
+        /// <returns><c>true</c> if the column exists, <c>false</c> if not.</returns>
+        public bool TryGetColumn(string columnName, out IList<object> data)
+        {
+            if (_columns.Contains(columnName))
+            {
+                data = _rows.Select(x => x[columnName]).ToList();
+                return true;
+            }
+
+            data = null;
+            return false;
+        }
+
+        /// <summary>
         /// Creates a new data table with only the specified columns.
         /// </summary>
         /// <param name="columnNames">The required columns for the new data table.</param>
