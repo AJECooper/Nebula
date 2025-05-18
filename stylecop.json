@@ -1,0 +1,11 @@
+{
+  "settings": {
+    "documentationRules": {
+      "companyName": "Nebula",
+      "copyrightText": "Copyright © Nebula 2025",
+      "documentInternalElements": true,
+      "documentPrivateElements": false,
+      "xmlHeader": true
+    }
+  }
+}

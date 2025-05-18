@@ -1,9 +1,6 @@
-﻿using Nebula.Sandbox.Experimentation.DataFrames;
-
-class Program
+﻿class Program
 {
     static void Main(string[] args)
     {
-        DataFramesExperiment.Run();
     }
 }

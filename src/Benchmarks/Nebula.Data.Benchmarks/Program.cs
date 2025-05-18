@@ -1,10 +1,10 @@
-﻿using BenchmarkDotNet.Running;
-using Nebula.Data.Benchmarks.DataReaders;
+﻿// <copyright file="Program.cs" company="Nebula">
+// Copyright © Nebula 2025
+// </copyright>
 
 class Program
 {
     static void Main(string[] args)
     {
-        BenchmarkRunner.Run<CsvReaderBenchmarks>();
     }
 }
