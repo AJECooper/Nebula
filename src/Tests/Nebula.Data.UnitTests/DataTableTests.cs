@@ -327,5 +327,161 @@ namespace Nebula.Data.UnitTests
             result.Should().BeFalse();
             columnValues.Should().BeNull();
         }
+
+        [Fact]
+        public void GetFeatures_ShouldReturnCorrectFeatureVectors_GivenValidColumnNames()
+        {
+            // Arrange
+            var tableData = new List<Dictionary<string, object>>
+            {
+                new() { { "Name", "Alice" }, { "Age", 30 }, { "Location", "NY" } },
+                new() { { "Name", "Bob" }, { "Age", 25 }, { "Location", "LA" } },
+            };
+
+            // Act
+            var dataTable = new DataTable(tableData);
+            var features = dataTable.GetFeatures("Name", "Location");
+
+            // Assert
+            features.Should().NotBeEmpty();
+            features.Should().HaveCount(2);
+            features[0].Should().BeEquivalentTo(new[] { "Alice", "NY" });
+            features[1].Should().BeEquivalentTo(new[] { "Bob", "LA" });
+        }
+
+        [Fact]
+        public void GetFeatures_ShouldThrowException_GivenInvalidColumnNames()
+        {
+            // Arrange
+            var tableData = new List<Dictionary<string, object>>
+            {
+                new() { { "Name", "Alice" }, { "Age", 30 }, { "Location", "NY" } },
+                new() { { "Name", "Bob" }, { "Age", 25 }, { "Location", "LA" } },
+            };
+
+            // Act
+            var dataTable = new DataTable(tableData);
+            Action act = () => dataTable.GetFeatures("Name", "Town");
+
+            // Assert
+            act.Should().Throw<ArgumentException>();
+        }
+
+        [Fact]
+        public void GetFeatures_ShouldReturnCorrectFeatureVectors_GivenValidColumnIndexes()
+        {
+            // Arrange
+            var tableData = new List<Dictionary<string, object>>
+            {
+                new() { { "Name", "Alice" }, { "Age", 30 }, { "Location", "NY" } },
+                new() { { "Name", "Bob" }, { "Age", 25 }, { "Location", "LA" } },
+            };
+
+            // Act
+            var dataTable = new DataTable(tableData);
+            var features = dataTable.GetFeatures(0, 2);
+
+            // Assert
+            features.Should().NotBeEmpty();
+            features.Should().HaveCount(2);
+            features[0].Should().BeEquivalentTo(new[] { "Alice", "NY" });
+            features[1].Should().BeEquivalentTo(new[] { "Bob", "LA" });
+        }
+
+        [Fact]
+        public void GetFeatures_ShouldThrowIndexOutOfRangeException_GivenInvalidColumnIndexes()
+        {
+            // Arrange
+            var tableData = new List<Dictionary<string, object>>
+            {
+                new() { { "Name", "Alice" }, { "Age", 30 }, { "Location", "NY" } },
+                new() { { "Name", "Bob" }, { "Age", 25 }, { "Location", "LA" } },
+            };
+
+            // Act
+            var dataTable = new DataTable(tableData);
+            Action act = () => dataTable.GetFeatures(0, 5);
+
+            // Assert
+            act.Should().Throw<IndexOutOfRangeException>();
+        }
+
+        [Fact]
+        public void GetTargets_ShouldReturnCorrectTargets_GivenValidColumnName()
+        {
+            // Arrange
+            var tableData = new List<Dictionary<string, object>>
+            {
+                new() { { "Name", "Alice" }, { "Age", 30 }, { "Location", "NY" } },
+                new() { { "Name", "Bob" }, { "Age", 25 }, { "Location", "LA" } },
+            };
+
+            // Act
+            var dataTable = new DataTable(tableData);
+            var targets = dataTable.GetTargets("Age");
+
+            // Assert
+            targets.Should().NotBeNull();
+            targets.Should().HaveCount(2);
+            targets.ElementAt(0).Should().Be(30);
+            targets.ElementAt(1).Should().Be(25);
+        }
+
+        [Fact]
+        public void GetTargets_ShouldThrowException_GivenInvalidColumnName()
+        {
+            // Arrange
+            var tableData = new List<Dictionary<string, object>>
+            {
+                new() { { "Name", "Alice" }, { "Age", 30 }, { "Location", "NY" } },
+                new() { { "Name", "Bob" }, { "Age", 25 }, { "Location", "LA" } },
+            };
+
+            // Act
+            var dataTable = new DataTable(tableData);
+            Action act = () => dataTable.GetTargets("Town");
+
+            // Assert
+            act.Should().Throw<ArgumentException>();
+        }
+
+        [Fact]
+        public void GetTargets_ShouldReturnCorrectTargets_GivenValidColumnIndex()
+        {
+            // Arrange
+            var tableData = new List<Dictionary<string, object>>
+            {
+                new() { { "Name", "Alice" }, { "Age", 30 }, { "Location", "NY" } },
+                new() { { "Name", "Bob" }, { "Age", 25 }, { "Location", "LA" } },
+            };
+
+            // Act
+            var dataTable = new DataTable(tableData);
+            var targets = dataTable.GetTargets(1);
+
+            // Assert
+            targets.Should().NotBeNull();
+            targets.Should().HaveCount(2);
+            targets.ElementAt(0).Should().Be(30);
+            targets.ElementAt(1).Should().Be(25);
+        }
+
+        [Fact]
+        public void GetTargets_ShouldThrowIndexOutOfRangeException_GivenInvalidColumnIndexes()
+        {
+            // Arrange
+            var tableData = new List<Dictionary<string, object>>
+            {
+                new() { { "Name", "Alice" }, { "Age", 30 }, { "Location", "NY" } },
+                new() { { "Name", "Bob" }, { "Age", 25 }, { "Location", "LA" } },
+            };
+
+            // Act
+            var dataTable = new DataTable(tableData);
+            Action act = () => dataTable.GetTargets(5);
+
+            // Assert
+            act.Should().Throw<IndexOutOfRangeException>();
+        }
     }
 }

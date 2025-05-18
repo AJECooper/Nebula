@@ -133,7 +133,7 @@ namespace Nebula.Data.Structures
 
             if (columnIndexes.Any(x => x < 0 || x >= _columns.Count))
             {
-                throw new IndexOutOfRangeException("Column indexes are out of range.");
+                throw new IndexOutOfRangeException($"Column index is out of range for the data table. The range is 0 - {_columns.Count - 1}");
             }
 
             var columnNames = columnIndexes
@@ -141,6 +141,90 @@ namespace Nebula.Data.Structures
                 .ToArray();
 
             return Extract(columnNames);
+        }
+
+        /// <summary>
+        /// Returns the vector of features for the specified columns by column name.
+        /// </summary>
+        /// <param name="columnNames">The feature column names.</param>
+        /// <returns>A list of feature vectors, one per row.</returns>
+        /// <exception cref="ArgumentException">Throws when column names are null, empty, or invalid.</exception>
+        public IList<IList<object>> GetFeatures(params string[] columnNames)
+        {
+            if (columnNames == null || columnNames.Length == 0)
+            {
+                throw new ArgumentException("You must specify one or more feature columns.", nameof(columnNames));
+            }
+
+            foreach (var name in columnNames)
+            {
+                if (!_columns.Contains(name))
+                {
+                    throw new ArgumentException($"Column '{name}' does not exist in the data table.", nameof(columnNames));
+                }
+            }
+
+            return _rows
+                .Select(row => (IList<object>)columnNames.Select(col => row[col]).ToList())
+                .ToList();
+        }
+
+        /// <summary>
+        /// Returns the vector of features for the specified columns by column indexes.
+        /// </summary>
+        /// <param name="columnIndexes">The feature column indexes.</param>
+        /// <returns>A list of feature vectors, one per row.</returns>
+        /// <exception cref="ArgumentException">Throws when column indexes are null or empty.</exception>
+        /// <exception cref="IndexOutOfRangeException">Throws when column indexes are out of range.</exception>
+        public IList<IList<object>> GetFeatures(params int[] columnIndexes)
+        {
+            if (columnIndexes == null || columnIndexes.Length == 0)
+            {
+                throw new ArgumentException("You must provide the column indexes to extract.", nameof(columnIndexes));
+            }
+
+            if (columnIndexes.Any(x => x < 0 || x >= _columns.Count))
+            {
+                throw new IndexOutOfRangeException("Column indexes are out of range.");
+            }
+
+            var selectedColumns = columnIndexes.Select(i => _columns[i]).ToArray();
+
+            return GetFeatures(selectedColumns);
+        }
+
+        /// <summary>
+        /// Gets the target values from a single specified column.
+        /// </summary>
+        /// <param name="columnName">The target column by column name.</param>
+        /// <returns>A list of target values.</returns>
+        /// <exception cref="ArgumentException">Throws when column name is invalid.</exception>
+        public IList<object> GetTargets(string columnName)
+        {
+            if (!_columns.Contains(columnName))
+            {
+                throw new ArgumentException($"Column '{columnName}' does not exist in the data table.", nameof(columnName));
+            }
+
+            return _rows.Select(row => row[columnName]).ToList();
+        }
+
+        /// <summary>
+        /// Gets the target values from a single specified column.
+        /// </summary>
+        /// <param name="columnIndex">The target column by column index.</param>
+        /// <returns>A list of target values.</returns>
+        /// <exception cref="IndexOutOfRangeException">Throws when column index is out of range.</exception>
+        public IList<object> GetTargets(int columnIndex)
+        {
+            if (columnIndex < 0 || columnIndex >= _columns.Count)
+            {
+                throw new IndexOutOfRangeException($"Column index {columnIndex} is out of range for the data table. The range is 0 - {_columns.Count - 1}");
+            }
+
+            var columnName = _columns[columnIndex];
+
+            return GetTargets(columnName);
         }
 
         /// <summary>
