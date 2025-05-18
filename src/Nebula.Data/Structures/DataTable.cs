@@ -228,6 +228,44 @@ namespace Nebula.Data.Structures
         }
 
         /// <summary>
+        /// Returns a formatted preview of the data table, including column names and sample rows.
+        /// </summary>
+        /// <param name="maxRowCount">The maximum number of rows to include in the preview.</param>
+        /// <returns>A formatted string representation of the data table.</returns>
+        public string Info(int maxRowCount = 10)
+        {
+            var stringOutput = new List<string>();
+
+            stringOutput.Add(string.Join(" | ", _columns));
+
+            stringOutput.Add(string.Join("-|-", _columns.Select(name => new string('-', name.Length))));
+
+            for (var i = 0; i < maxRowCount; i++)
+            {
+                if (i >= _rows.Count())
+                {
+                    break;
+                }
+
+                var rowData = new List<string>();
+
+                foreach (var column in _columns)
+                {
+                    rowData.Add(_rows.ElementAt(i)[column]?.ToString() ?? "null");
+                }
+
+                stringOutput.Add(string.Join(" | ", rowData));
+            }
+
+            if (_rows.Count() > maxRowCount)
+            {
+                stringOutput.Add($"... {RowCount - maxRowCount} more row(s)");
+            }
+
+            return string.Join("\n", stringOutput);
+        }
+
+        /// <summary>
         /// Validates that the provided table is not null or empty and that all rows have the same keys.
         /// </summary>
         /// <param name="table">The data table.</param>

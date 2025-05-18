@@ -483,5 +483,60 @@ namespace Nebula.Data.UnitTests
             // Assert
             act.Should().Throw<IndexOutOfRangeException>();
         }
+
+        [Fact]
+        public void Info_ShouldReturnFormattedTableInfo_GivenValidData()
+        {
+            // Arrange
+            var tableData = new List<Dictionary<string, object>>
+            {
+                new() { { "Name", "Alice" }, { "Age", 30 } },
+                new() { { "Name", "Bob" }, { "Age", 25 } },
+                new() { { "Name", "Steve" }, { "Age", 30 } },
+                new() { { "Name", "Matthew" }, { "Age", 42 } },
+                new() { { "Name", "John" }, { "Age", 17 } },
+            };
+
+            // Act
+            var dataTable = new DataTable(tableData);
+            var info = dataTable.Info();
+
+            // Assert
+            info.Should().NotBeNull();
+            info.Should().Contain("Name | Age");
+            info.Should().Contain("-----|----");
+            info.Should().Contain("Alice | 30");
+            info.Should().Contain("Bob | 25");
+            info.Should().Contain("Steve | 30");
+            info.Should().Contain("Matthew | 42");
+            info.Should().Contain("John | 17");
+        }
+
+        [Fact]
+        public void Info_ShouldReturnTruncatedTableInfo_GivenValidMaxRowCount()
+        {
+            // Arrange
+            var tableData = new List<Dictionary<string, object>>
+            {
+                new() { { "Name", "Alice" }, { "Age", 30 } },
+                new() { { "Name", "Bob" }, { "Age", 25 } },
+                new() { { "Name", "Steve" }, { "Age", 30 } },
+                new() { { "Name", "Matthew" }, { "Age", 42 } },
+                new() { { "Name", "John" }, { "Age", 17 } },
+            };
+
+            // Act
+            var dataTable = new DataTable(tableData);
+            var info = dataTable.Info(3);
+
+            // Assert
+            info.Should().NotBeNull();
+            info.Should().Contain("Name | Age");
+            info.Should().Contain("-----|----");
+            info.Should().Contain("Alice | 30");
+            info.Should().Contain("Bob | 25");
+            info.Should().Contain("Steve | 30");
+            info.Should().Contain("... 2 more row(s)");
+        }
     }
 }
