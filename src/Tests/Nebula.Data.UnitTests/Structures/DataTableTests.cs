@@ -2,7 +2,7 @@
 // Copyright © Nebula 2025
 // </copyright>
 
-namespace Nebula.Data.UnitTests
+namespace Nebula.Data.UnitTests.Structures
 {
     using FluentAssertions;
     using Nebula.Data.Structures;
