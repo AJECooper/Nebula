@@ -1,10 +1,16 @@
-﻿// <copyright file="Program.cs" company="Nebula">
+// <copyright file="Program.cs" company="Nebula">
 // Copyright © Nebula 2025
 // </copyright>
 
-class Program
+namespace Nebula.Data.Benchmarks
 {
-    static void Main(string[] args)
+    using BenchmarkDotNet.Running;
+
+    public class Program
     {
+        static void Main(string[] args) =>
+            BenchmarkSwitcher
+            .FromAssembly(typeof(Program).Assembly)
+            .Run(args);
     }
 }
