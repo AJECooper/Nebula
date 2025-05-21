@@ -8,6 +8,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="BenchmarkResultHistory\CsvReader_FromCsv_20_05_2025.md" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="BenchmarkResultHistory\CsvReader_FromCsv_20_05_2025.md" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="BenchmarkDotNet" Version="0.14.0" />
     <PackageReference Include="Bogus" Version="35.6.3" />
     <PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
