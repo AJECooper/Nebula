@@ -6,7 +6,7 @@ namespace Nebula.Data.IO
 {
     using Nebula.Data.Structures;
 
-   /// <summary>
+    /// <summary>
     /// Reads from a csv files and converts them into a DataTable.
     /// </summary>
     public static class CsvReader
