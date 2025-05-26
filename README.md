@@ -33,5 +33,7 @@ Nebula contain multiple libraries that are independently versioned and can be us
    ```
 3. Run tests
    ``` dotnet test ```
-4. Run Benchmarks 
-   ``` dotnet run -c Release --project Benchmarks/benchmarktorun```
+4. Run Benchmarks
+   cd to appropriate project
+   ``` dotnet run -c Release```
+   Select the benchmark to run or use * to run all
