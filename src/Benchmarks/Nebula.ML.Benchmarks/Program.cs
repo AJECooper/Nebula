@@ -1,2 +1,16 @@
-﻿// See https://aka.ms/new-console-template for more information
-Console.WriteLine("Hello, World!");
+// <copyright file="Program.cs" company="Nebula">
+// Copyright © Nebula 2025
+// </copyright>
+
+namespace Nebula.ML.Benchmarks
+{
+    using BenchmarkDotNet.Running;
+
+    public class Program
+    {
+        static void Main(string[] args) =>
+            BenchmarkSwitcher
+            .FromAssembly(typeof(Program).Assembly)
+            .Run(args);
+    }
+}
