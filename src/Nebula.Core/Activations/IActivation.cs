@@ -7,7 +7,7 @@ namespace Nebula.Core.Activations
     /// <summary>
     /// Defines the interface for activation functions.
     /// </summary>
-    public interface IActivationFunction
+    public interface IActivation
     {
         /// <summary>
         /// Determines the output of the activation function for a given input.

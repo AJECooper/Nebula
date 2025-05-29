@@ -8,15 +8,15 @@ namespace Nebula.Core.Activations
     /// The heaviside step activation function. Returns 0 for inputs less than threshold, and 1 for inputs greater than or equal to threshold.
     /// Default threshold is 0.5.
     /// </summary>
-    public class HeavisideStepActivation : IActivationFunction
+    public class HeavisideStep : IActivation
     {
         private readonly double _threshold;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="HeavisideStepActivation"/> class.
+        /// Initializes a new instance of the <see cref="HeavisideStep"/> class.
         /// </summary>
         /// <param name="threshold">The value that determines if the perceptron should "fire".</param>
-        public HeavisideStepActivation(double threshold = 0.5)
+        public HeavisideStep(double threshold = 0.5)
         {
             _threshold = threshold;
         }

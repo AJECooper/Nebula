@@ -1,16 +1,13 @@
-// <copyright file="Perceptron.cs" company="Nebula">
+// <copyright file="LinearRegression.cs" company="Nebula">
 // Copyright © Nebula 2025
 // </copyright>
 
-namespace Nebula.ML.Models.Classification
+namespace Nebula.ML.Models.Regression
 {
     using Nebula.Core.Activations;
     using Nebula.NICE.MathOps;
 
-    /// <summary>
-    /// A simple binary-classifier.
-    /// </summary>
-    public class Perceptron
+    public class LinearRegression
     {
         private readonly IActivation _activation;
 
@@ -19,15 +16,9 @@ namespace Nebula.ML.Models.Classification
         private int _epochs;
         private double _learningRate;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Perceptron"/> class with a default activation function.
-        /// </summary>
-        /// <param name="activation">The activation function to use; default heaviside step function.</param>
-        /// <param name="epochs">The number of full iterations of the data.</param>
-        /// <param name="learningRate">Defines how quick the model learns.</param>
-        public Perceptron(IActivation? activation, int epochs, double learningRate = 0.01)
+        public LinearRegression(IActivation? activation, int epochs, double learningRate = 0.01)
         {
-            _activation = activation ?? new HeavisideStep();
+            _activation = activation ?? new IdentityActivation();
             _epochs = epochs;
             _learningRate = learningRate;
         }
@@ -37,7 +28,7 @@ namespace Nebula.ML.Models.Classification
         /// </summary>
         /// <param name="features">An array for feature vectors.</param>
         /// <param name="labels">The desired output for each feature.</param>
-        public void Fit(double[][] features, int[] labels)
+        public void Fit(double[][] features, double[] labels)
         {
             if (features == null || labels == null)
             {
@@ -52,7 +43,7 @@ namespace Nebula.ML.Models.Classification
             if (_weights == null)
             {
                 InitialiseWeightsAndBias(features[0].Length);
-            } 
+            }
             else if (_weights.Length != features[0].Length)
             {
                 throw new InvalidOperationException("Cannot fit: feature‐vector length changed since initialization.");
@@ -62,16 +53,20 @@ namespace Nebula.ML.Models.Classification
             {
                 for (int sample = 0; sample < features.Length; sample++)
                 {
-                    var prediction = Predict(features[sample]);
+                    var z = VectorOperations.DotProduct(features[sample], _weights) + _bias;
+
+                    var prediction = _activation.Activate(z);
 
                     var error = labels[sample] - prediction;
 
+                    var delta = error * _activation.Derivative(z);
+
                     for (int i = 0; i < _weights.Length; i++)
                     {
-                        _weights[i] += _learningRate * error * features[sample][i];
+                        _weights[i] += _learningRate * delta * features[sample][i];
                     }
 
-                    _bias += _learningRate * error;
+                    _bias += _learningRate * delta;
                 }
             }
         }
@@ -81,9 +76,9 @@ namespace Nebula.ML.Models.Classification
         /// </summary>
         /// <param name="features">The feature vector.</param>
         /// <returns>The estimated output for the feature vector (0 or 1).</returns>
-        public int Predict(double[] features)
+        public double Predict(double[] features)
         {
-            return (int)_activation.Activate(VectorOperations.DotProduct(features, _weights) + _bias);
+            return _activation.Activate(VectorOperations.DotProduct(features, _weights) + _bias);
         }
 
         private void InitialiseWeightsAndBias(int featureSize)
