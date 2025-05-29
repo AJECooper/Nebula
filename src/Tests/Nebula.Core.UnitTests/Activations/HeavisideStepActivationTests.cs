@@ -17,7 +17,7 @@ namespace Nebula.Core.UnitTests.Activations
         public void Activate_ShouldReturnZero_GivenInputLessThanThreshold(double input, double threshold)
         {
             // Arrange
-            var activation = new HeavisideStepActivation(threshold);
+            var activation = new HeavisideStep(threshold);
 
             // Act
             double result = activation.Activate(input);
@@ -34,7 +34,7 @@ namespace Nebula.Core.UnitTests.Activations
         public void Activate_ShouldReturnOne_GivenInputLessThanThreshold(double input, double threshold)
         {
             // Arrange
-            var activation = new HeavisideStepActivation(threshold);
+            var activation = new HeavisideStep(threshold);
 
             // Act
             double result = activation.Activate(input);
