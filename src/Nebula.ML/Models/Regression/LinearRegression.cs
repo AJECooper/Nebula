@@ -11,8 +11,8 @@ namespace Nebula.ML.Models.Regression
     {
         private readonly IActivation _activation;
 
-        private double[] _weights;
-        private double _bias;
+        private double[] _coefficients;
+        private double _intercept;
         private int _epochs;
         private double _learningRate;
 
@@ -26,65 +26,65 @@ namespace Nebula.ML.Models.Regression
         /// <summary>
         /// Trains the model to predict the labels from the features.
         /// </summary>
-        /// <param name="features">An array for feature vectors.</param>
-        /// <param name="labels">The desired output for each feature.</param>
-        public void Fit(double[][] features, double[] labels)
+        /// <param name="inputs">An array for feature vectors.</param>
+        /// <param name="targets">The desired output for each feature.</param>
+        public void Fit(double[][] inputs, double[] targets)
         {
-            if (features == null || labels == null)
+            if (inputs == null || targets == null)
             {
-                throw new ArgumentNullException(nameof(features));
+                throw new ArgumentNullException(nameof(inputs));
             }
 
-            if (features.Length == 0 || features.Length != labels.Length)
+            if (inputs.Length == 0 || inputs.Length != targets.Length)
             {
                 throw new ArgumentException("Features and labels must not be empty and of the same length.");
             }
 
-            if (_weights == null)
+            if (_coefficients == null)
             {
-                InitialiseWeightsAndBias(features[0].Length);
+                InitialiseWeightsAndBias(inputs[0].Length);
             }
-            else if (_weights.Length != features[0].Length)
+            else if (_coefficients.Length != inputs[0].Length)
             {
                 throw new InvalidOperationException("Cannot fit: feature‐vector length changed since initialization.");
             }
 
             for (int epoch = 0; epoch < _epochs; epoch++)
             {
-                for (int sample = 0; sample < features.Length; sample++)
+                for (int sample = 0; sample < inputs.Length; sample++)
                 {
-                    var z = VectorOperations.DotProduct(features[sample], _weights) + _bias;
+                    var z = VectorOperations.DotProduct(inputs[sample], _coefficients) + _intercept;
 
                     var prediction = _activation.Activate(z);
 
-                    var error = labels[sample] - prediction;
+                    var error = targets[sample] - prediction;
 
                     var delta = error * _activation.Derivative(z);
 
-                    for (int i = 0; i < _weights.Length; i++)
+                    for (int i = 0; i < _coefficients.Length; i++)
                     {
-                        _weights[i] += _learningRate * delta * features[sample][i];
+                        _coefficients[i] += _learningRate * delta * inputs[sample][i];
                     }
 
-                    _bias += _learningRate * delta;
+                    _intercept += _learningRate * delta;
                 }
             }
         }
 
         /// <summary>
-        /// Predicts the output for a given feature vector using the trained model.
+        /// Predicts the target value for the given feature vector using the trained linear regression model.
         /// </summary>
-        /// <param name="features">The feature vector.</param>
-        /// <returns>The estimated output for the feature vector (0 or 1).</returns>
-        public double Predict(double[] features)
+        /// <param name="input">An array of input feature values.</param>
+        /// <returns>The estimated continuous target value.</returns>
+        public double Predict(double[] input)
         {
-            return _activation.Activate(VectorOperations.DotProduct(features, _weights) + _bias);
+            return _activation.Activate(VectorOperations.DotProduct(input, _coefficients) + _intercept);
         }
 
         private void InitialiseWeightsAndBias(int featureSize)
         {
-            _weights = new double[featureSize];
-            _bias = 0.0;
+            _coefficients = new double[featureSize];
+            _intercept = 0.0;
         }
     }
 }
