@@ -43,7 +43,7 @@ namespace Nebula.Data.IO
 
             var tableData = new List<Dictionary<string, object>>();
 
-            for (int i = 1; i < columns.Length; i++)
+            for (int i = 1; i < content.Length; i++)
             {
                 var rowData = content[i]
                     .Split(',')
