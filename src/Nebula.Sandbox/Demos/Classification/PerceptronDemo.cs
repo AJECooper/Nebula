@@ -21,6 +21,7 @@ namespace Nebula.Sandbox.Demos.Classification
             Console.WriteLine("\nNext we'll create our training data and labels by using the .ToVectorMatric and .ToLabelVector");
 
             double[][] features = dataTable.ToVectorMatrix("Weight", "Smoothness");
+
             int[] labels = dataTable.ToLabelVector<int>("Label");
 
             for (int i = 0; i < features.Length; i++)
@@ -31,9 +32,22 @@ namespace Nebula.Sandbox.Demos.Classification
                 Console.WriteLine($"{featureString} -> {labelString}");
             }
 
+            Console.WriteLine("\nYou might notice that there's an imbalance in our features. The weights are much higher than the smoothness of the object.");
+            Console.WriteLine("We can use the FeatureScaling class to normalize our features to the [0, 1] range.");
+            double[][] normalizedFeatures = FeatureScaling.MinMaxNormalization(features);
+
+            for (int i = 0; i < normalizedFeatures.Length; i++)
+            {
+                string normalizedFeatureString = "[" + string.Join(", ", normalizedFeatures[i]) + "]";
+
+                Console.WriteLine($"{normalizedFeatureString}");
+            }
+
+            Console.WriteLine("\nNow our features are normalized to the [0, 1] range. Let's print them out again to see the difference.");
+
             Console.WriteLine("\nNext we want to split our data into training and test data.");
 
-            var (trainFeatures, trainLabels, testFeatures, testLabels) = DataSplit.Split(features, labels, 0.8, true, 124);
+            var (trainFeatures, trainLabels, testFeatures, testLabels) = DataSplit.Split(normalizedFeatures, labels, 0.8, true, 124);
 
             Console.WriteLine($"\nTraining on {trainFeatures.Length} samples, testing on {testFeatures.Length} samples.");
 
@@ -63,8 +77,9 @@ namespace Nebula.Sandbox.Demos.Classification
             Console.WriteLine("\nNow, let's make a prediction on a new piece of fruit. Let's say we have a fruit with a weight of 150 grams and a smoothness of 0.8.");
 
             double[] newFruit = new double[] { 150, 0.8 };
+            double[] newFruitNormalized = FeatureScaling.MinMaxNormalization(new[] { newFruit })[0];
 
-            int newPrediction = perceptron.Predict(newFruit);
+            int newPrediction = perceptron.Predict(newFruitNormalized);
 
             string fruitType = newPrediction == 1 ? "Apple" : "Orange";
 
@@ -73,7 +88,9 @@ namespace Nebula.Sandbox.Demos.Classification
             Console.WriteLine("\nLet's try another fruit with a weight of 90 grams and a smoothness of 0.3 to ensure that our model knows to predict orange!.");
 
             double[] anotherNewFruit = new double[] { 90, 0.3 };
-            int anotherNewPrediction = perceptron.Predict(anotherNewFruit);
+            double[] anotherNewFruitNormalized = FeatureScaling.MinMaxNormalization(new[] { anotherNewFruit })[0];
+
+            int anotherNewPrediction = perceptron.Predict(anotherNewFruitNormalized);
 
             string anotherFruitType = anotherNewPrediction == 1 ? "Apple" : "Orange";
 
