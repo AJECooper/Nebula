@@ -9,6 +9,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Nebula.Data\Nebula.Data.csproj" />
+    <ProjectReference Include="..\Nebula.ML\Nebula.ML.csproj" />
   </ItemGroup>
 
 </Project>
