@@ -7,6 +7,10 @@ namespace Nebula.ML.Models.Regression
     using Nebula.Core.Activations;
     using Nebula.NICE.MathOps;
 
+    /// <summary>
+    /// Represents a linear regression model for predicting a continuous target value from input feature vectors.
+    /// The model learns its coefficients and intercept via iterative gradient descent and applies the specified activation function (identity by default).
+    /// </summary>
     public class LinearRegression
     {
         private readonly IActivation _activation;
@@ -16,6 +20,12 @@ namespace Nebula.ML.Models.Regression
         private int _epochs;
         private double _learningRate;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LinearRegression"/> class with a default activation function.
+        /// </summary>
+        /// <param name="activation">The activation function to use; default identity activation function.</param>
+        /// <param name="epochs">The number of full iterations of the data.</param>
+        /// <param name="learningRate">Defines how quick the model learns.</param>
         public LinearRegression(IActivation? activation, int epochs, double learningRate = 0.01)
         {
             _activation = activation ?? new IdentityActivation();
