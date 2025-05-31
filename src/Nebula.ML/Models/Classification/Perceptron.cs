@@ -20,7 +20,7 @@ namespace Nebula.ML.Models.Classification
         private double _learningRate;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Perceptron"/> class with a default activation function.
+        /// Initializes a new instance of the <see cref="Perceptron"/> class with the heaviside step default activation function.
         /// </summary>
         /// <param name="activation">The activation function to use; default heaviside step function.</param>
         /// <param name="epochs">The number of full iterations of the data.</param>
