@@ -10,91 +10,102 @@ namespace Nebula.Sandbox.Demos.Classification
         public static void Run()
         {
             Console.WriteLine("This is a demo of how to use the perceptron model for simple binary classification");
-            Console.WriteLine("In this demo we will use the perceptron to determine if a mystery piece of fruit is an apple or and orange based on the weight and smoothness of the friut.");
-            Console.WriteLine("For this we'll say that fruits of a higher weight and smoothness will be an apple and lower weights and smoothness is an orange.");
+            Console.WriteLine("In this demo we will use the perceptron to determine if a mystery piece of fruit is an apple or an orange based on the weight and smoothness of the fruit.");
+            Console.WriteLine("For this we'll say that fruits of a higher weight and smoothness will be an apple, and lower weight and smoothness will be an orange.");
 
+            // ────────────────────────────────────────────────────────────────────────
+            // 1) Load the CSV into a DataTable and extract raw features/labels
+            // ────────────────────────────────────────────────────────────────────────
             var dataTable = CsvReader.FromCsv("../../../Data/more_fruit.csv");
 
-            Console.WriteLine("We can use the .info method to see the data in a tabular format.");
+            Console.WriteLine("We can use the .Info() method to see the data in a tabular format:");
             Console.WriteLine(dataTable.Info());
 
-            Console.WriteLine("\nNext we'll create our training data and labels by using the .ToVectorMatric and .ToLabelVector");
-
+            Console.WriteLine("\nNext we'll extract our feature matrix and label vector:");
             double[][] features = dataTable.ToVectorMatrix("Weight", "Smoothness");
-
             int[] labels = dataTable.ToLabelVector<int>("Label");
 
             for (int i = 0; i < features.Length; i++)
             {
                 string featureString = "[" + string.Join(", ", features[i]) + "]";
                 string labelString = "[" + labels[i] + "]";
-
                 Console.WriteLine($"{featureString} -> {labelString}");
             }
 
-            Console.WriteLine("\nYou might notice that there's an imbalance in our features. The weights are much higher than the smoothness of the object.");
-            Console.WriteLine("We can use the FeatureScaling class to normalize our features to the [0, 1] range.");
-            double[][] normalizedFeatures = FeatureScaling.MinMaxNormalization(features);
-
-            for (int i = 0; i < normalizedFeatures.Length; i++)
-            {
-                string normalizedFeatureString = "[" + string.Join(", ", normalizedFeatures[i]) + "]";
-
-                Console.WriteLine($"{normalizedFeatureString}");
-            }
-
-            Console.WriteLine("\nNow our features are normalized to the [0, 1] range. Let's print them out again to see the difference.");
-
-            Console.WriteLine("\nNext we want to split our data into training and test data.");
-
-            var (trainFeatures, trainLabels, testFeatures, testLabels) = DataSplit.Split(normalizedFeatures, labels, 0.8, true, 124);
+            // ────────────────────────────────────────────────────────────────────────
+            // 2) Split into train/test data
+            // ────────────────────────────────────────────────────────────────────────
+            Console.WriteLine("\nNow we split raw data into 80% train / 20% test:");
+            var (trainFeatures, trainLabels, testFeatures, testLabels) =
+                DataSplit.Split(features, labels, splitRatio: 0.8, shuffle: true, seed: 124);
 
             Console.WriteLine($"\nTraining on {trainFeatures.Length} samples, testing on {testFeatures.Length} samples.");
 
-            Console.WriteLine("\nNow we can create our perceptron model and train it on the training data.");
+            // ────────────────────────────────────────────────────────────────────────
+            // 3) Compute min/max on TRAINING SET
+            // ────────────────────────────────────────────────────────────────────────
+            Console.WriteLine("\nComputing per-feature min/max on the training set:");
+            var (mins, maxs) = FeatureScaling.ComputeMinMax(trainFeatures);
 
-            var perceptron = new Perceptron(null, epochs: 50, learningRate: 0.1);
-            perceptron.Fit(trainFeatures, trainLabels);
+            Console.WriteLine("    mins: [" + string.Join(", ", mins) + "]");
+            Console.WriteLine("    maxs: [" + string.Join(", ", maxs) + "]");
 
-            Console.WriteLine("\nTraining complete. Now we can test the model on the test data.");
-
-            int correctPredictions = 0;
-
-            for (int i = 0; i < testFeatures.Length; i++)
+            // ────────────────────────────────────────────────────────────────────────
+            // 4) Apply those same mins/maxs to train and test
+            // ────────────────────────────────────────────────────────────────────────
+            Console.WriteLine("\nScaling the training set into [0,1]:");
+            double[][] trainNorm = FeatureScaling.ApplyMinMax(trainFeatures, mins, maxs);
+            for (int i = 0; i < trainNorm.Length; i++)
             {
-                int prediction = perceptron.Predict(testFeatures[i]);
-                if (prediction == testLabels[i])
-                {
-                    correctPredictions++;
-                }
-
-                var predFeatureString = "[" + string.Join(", ", testFeatures[i]) + "]";
-                Console.WriteLine($"For data sample {predFeatureString} I predicted {prediction}, the correct label is {testLabels[i]}");
+                Console.WriteLine("  [" + string.Join(", ", trainNorm[i]) + "]");
             }
 
-            Console.WriteLine($"\nModel Accuracy: {(double)correctPredictions / testFeatures.Length}");
+            Console.WriteLine("\nScaling the test set into [0,1]:");
+            double[][] testNorm = FeatureScaling.ApplyMinMax(testFeatures, mins, maxs);
+            for (int i = 0; i < testNorm.Length; i++)
+            {
+                Console.WriteLine("  [" + string.Join(", ", testNorm[i]) + "]");
+            }
 
-            Console.WriteLine("\nNow, let's make a prediction on a new piece of fruit. Let's say we have a fruit with a weight of 150 grams and a smoothness of 0.8.");
+            // ────────────────────────────────────────────────────────────────────────
+            // 5) Train the perceptron on the normalized TRAINING data
+            // ────────────────────────────────────────────────────────────────────────
+            Console.WriteLine("\nNow we create and train our perceptron on the normalized training data:");
+            var perceptron = new Perceptron(null, epochs: 50, learningRate: 0.1);
+            perceptron.Fit(trainNorm, trainLabels);
 
+            Console.WriteLine("\nTraining complete. Testing on the normalized test set:");
+            int correct = 0;
+            for (int i = 0; i < testNorm.Length; i++)
+            {
+                int prediction = perceptron.Predict(testNorm[i]);
+                if (prediction == testLabels[i])
+                    correct++;
+
+                string sampleStr = "[" + string.Join(", ", testNorm[i]) + "]";
+                Console.WriteLine($"  Sample {sampleStr} -> predicted {prediction}, actual {testLabels[i]}");
+            }
+
+            Console.WriteLine($"\nModel Accuracy: {(double)correct / testNorm.Length:P2}");
+
+            // ────────────────────────────────────────────────────────────────────────
+            // 6) Predict on brand-new samples (always ApplyMinMax with the SAME mins/maxs!)
+            // ────────────────────────────────────────────────────────────────────────
+            Console.WriteLine("\nPredicting on a brand-new fruit (weight=150, smoothness=0.8):");
             double[] newFruit = new double[] { 150, 0.8 };
-            double[] newFruitNormalized = FeatureScaling.MinMaxNormalization(new[] { newFruit })[0];
+            double[] newFruitScaled = FeatureScaling.ApplyMinMax(newFruit, mins, maxs);
+            int newPrediction = perceptron.Predict(newFruitScaled);
+            string newFruitType = newPrediction == 1 ? "Apple" : "Orange";
+            Console.WriteLine($"  Scaled input: [{string.Join(", ", newFruitScaled)}]");
+            Console.WriteLine($"  -> Model predicts: {newFruitType}");
 
-            int newPrediction = perceptron.Predict(newFruitNormalized);
-
-            string fruitType = newPrediction == 1 ? "Apple" : "Orange";
-
-            Console.WriteLine($"\nThe model predicts that the new fruit is an {fruitType} based on its weight and smoothness.");
-
-            Console.WriteLine("\nLet's try another fruit with a weight of 90 grams and a smoothness of 0.3 to ensure that our model knows to predict orange!.");
-
+            Console.WriteLine("\nNow another new fruit (weight=90, smoothness=0.3):");
             double[] anotherNewFruit = new double[] { 90, 0.3 };
-            double[] anotherNewFruitNormalized = FeatureScaling.MinMaxNormalization(new[] { anotherNewFruit })[0];
-
-            int anotherNewPrediction = perceptron.Predict(anotherNewFruitNormalized);
-
-            string anotherFruitType = anotherNewPrediction == 1 ? "Apple" : "Orange";
-
-            Console.WriteLine($"\nThe model predicts that the new fruit is an {anotherFruitType} based on its weight and smoothness.");
+            double[] anotherNewFruitScaled = FeatureScaling.ApplyMinMax(anotherNewFruit, mins, maxs);
+            int anotherPrediction = perceptron.Predict(anotherNewFruitScaled);
+            string anotherFruitType = anotherPrediction == 1 ? "Apple" : "Orange";
+            Console.WriteLine($"  Scaled input: [{string.Join(", ", anotherNewFruitScaled)}]");
+            Console.WriteLine($"  -> Model predicts: {anotherFruitType}");
         }
     }
 }
