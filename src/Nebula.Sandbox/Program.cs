@@ -5,7 +5,8 @@ class Program
 {
     static void Main(string[] args)
     {
-        PerceptronDemo.Run();
+        //PerceptronDemo.Run();
         //LinearRegressionDemo.Run();
+        LogisticRegressionDemo.Run();
     }
 }
