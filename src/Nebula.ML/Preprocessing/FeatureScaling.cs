@@ -147,6 +147,5 @@ namespace Nebula.ML.Preprocessing
 
             return normalized;
         }
-
     }
 }
