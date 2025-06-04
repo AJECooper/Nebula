@@ -41,5 +41,56 @@ namespace Nebula.ML.UnitTests.Extensions
             // Assert
             result.Should().BeEquivalentTo(expected);
         }
+
+        [Fact]
+        public void AppendEncodedColumn_ShouldThrowException_GivenCategoricalDataIsNotEqualFeaturesLength()
+        {
+            // Arrange
+            double[][] features = new double[][]
+            {
+                new double[] { 1.0, 2.0 },
+                new double[] { 3.0, 4.0 }
+            };
+            string[] categories = { "Test1", "Test2", "Test3" };
+
+            // Act
+            Action act = () => OneHotEncoder.AppendEncodedColumn(features, categories);
+
+            // Assert
+            act.Should().Throw<ArgumentException>()
+                .WithMessage("New entry not in distinct list appears.");
+        }
+
+        [Fact]
+        public void AppendEncodedColumn_AppendsOneHotColumns_Correctly()
+        {
+            // Arrange
+            double[][] features = new double[][]
+            {
+            new[] { 1.0, 2.0 },
+            new[] { 3.0, 4.0 }
+            };
+            
+            string[] categoricalData = { "Dog", "Cat" };
+
+            // Act
+            double[][] combined = OneHotEncoder.AppendEncodedColumn(features, categoricalData);
+
+            // Assert
+            combined.Length.Should().Be(2);
+            combined[0].Length.Should().Be(4);
+            combined[1].Length.Should().Be(4);
+
+            combined[0][0].Should().Be(1.0);
+            combined[0][1].Should().Be(2.0);
+            combined[1][0].Should().Be(3.0);
+            combined[1][1].Should().Be(4.0);
+
+            combined[0][2].Should().Be(1.0);
+            combined[0][3].Should().Be(0.0);
+            
+            combined[1][2].Should().Be(0.0);
+            combined[1][3].Should().Be(1.0);
+        }
     }
 }
