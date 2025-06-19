@@ -58,7 +58,7 @@ namespace Nebula.ML.UnitTests.Extensions
 
             // Assert
             act.Should().Throw<ArgumentException>()
-                .WithMessage("New entry not in distinct list appears.");
+                .WithMessage("Number of samples in features must match number of entries in categoricalData.");
         }
 
         [Fact]
