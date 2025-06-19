@@ -12,7 +12,7 @@ namespace Nebula.NICE.MathOps
         /// <summary>
         /// Computes the dot product (scalar product) of two vectors of equal length.
         /// </summary>
-        /// <param name="vector1">The first input vector as a read-only span of double-precision values</param>
+        /// <param name="vector1">The first input vector as a read-only span of double-precision values.</param>
         /// <param name="vector2">The second input vector as a read-only span of double-precision values.</param>
         /// <returns>The sum of the element-wise products (vector1[i] * vector2[i]).</returns>
         /// <exception cref="ArgumentException">Thrown when vector1 and vector2 are different lengths.</exception>
