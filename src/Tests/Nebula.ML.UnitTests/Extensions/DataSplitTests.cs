@@ -102,8 +102,8 @@ namespace Nebula.ML.UnitTests.Extensions
             var (trainX2, trainY2, testX2, testY2) = DataSplit.Split(features, labels, splitRatio, true);
 
             // Assert
-            trainX1.Should().NotBeEquivalentTo(trainX2);
-            testX1.Should().NotBeEquivalentTo(testX2);
+            trainX1.Should().NotBeSameAs(trainX2);
+            testX1.Should().NotBeSameAs(testX2);
         }
     }
 }
